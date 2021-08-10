@@ -15,6 +15,7 @@ class Player(object):
 
 class Bandit():
     def __init__(self):
+        self.name = 'El Bandito'
         self.hp = 30
         self.inventory = {'blade': 1}
         self.action = {
@@ -31,7 +32,6 @@ Commands:
   go [direction]
   get [item]
   stat [status]
-  inv [inventory]
 ''')
 
 def showStatus():
@@ -56,6 +56,10 @@ def playerAttack():
         attackChoice = input(f"How will you attack? {attackList} ")
         print(player.action.get(attackChoice)[0])
 
+def enemy():
+    bandit = Bandit()
+    print(bandit.name)
+
 #a dictionary linking a room to other rooms
 ## A dictionary linking a room to other rooms
 rooms = {
@@ -68,7 +72,8 @@ rooms = {
 
             'Kitchen' : {
                   'north' : 'Hall',
-                  'item'  : 'monster',
+                  'item'  : 'Blade of Doom',
+                  'enemy' : Bandit,
                 },
             'Dining Room' : {
                   'west' : 'Hall',
@@ -94,10 +99,33 @@ while True:
     while move == '':
         move = input('>')
 
-    
+    move = move.lower().split(" ", 1)
+
     ##playerAttack()
     if move[0] == "stat":
         showStatus()
+
+    #if they type 'go' first
+    if move[0] == 'go':
+        #check that they are allowed wherever they want to go
+        if move[1] in rooms[currentRoom]:
+            #set the current room to the new room
+            currentRoom = rooms[currentRoom][move[1]]
+            print(f"""
+                    You are now in the {currentRoom}.
+                    {Bandit().name} is in the room.
+                    He is moving towards a sword that appears to be sheathed in darkness.
+                    What will you do?
+                    """)
+        else:
+            print('You can\'t go that way!')
+
+    if move[0] == 'attack':
+        playerAttack()
+        
+    if move[0] == 'run':
+        print("Your cowardice has been noticed. You have escaped unharmed but at what cost? The stench of shame now lingers over you.")
+        sys.exit()
 
     if move[0] in ['q', 'quit']:
         print("Are you sure you want to quit? Yes/No")
